@@ -7,7 +7,7 @@ public class Customer {
     String name;
     String surname;
     String customerCode;
-    DayMonthYear dateofBirth;
+    Integer age;
 
     public Customer(String name, String surname, String customerCode, Integer age){
         this.name = name;
