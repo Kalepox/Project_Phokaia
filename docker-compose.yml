@@ -1,0 +1,22 @@
+# Local infrastructure for Phokaia.
+# Start:  docker compose up -d
+# Stop:   docker compose down        (add -v to also delete the database data)
+
+services:
+
+  # Database owned by account-service (each service has its own database)
+  account-db:
+    image: postgres:17
+    container_name: phokaia-account-db
+    environment:
+      POSTGRES_DB: accountdb
+      POSTGRES_USER: phokaia
+      POSTGRES_PASSWORD: phokaia
+    ports:
+      - "5432:5432"
+    volumes:
+      - account-db-data:/var/lib/postgresql/data
+
+# Named volumes keep database data when containers are recreated
+volumes:
+  account-db-data:
