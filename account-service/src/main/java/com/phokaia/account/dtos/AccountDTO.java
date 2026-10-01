@@ -21,11 +21,11 @@ public final class AccountDTO {
     ){}
         
 
-    public record Response(String customerCode, String accountCode, String currencyType, BigDecimal balance){
+    public record Response(String accountCode, String customerCode, String currencyType, BigDecimal balance){
         public static Response from (Account account){
             return new Response(
-                account.getHolder().getCustomerCode(),
                 account.getAccountCode(),
+                account.getHolder().getCustomerCode(),
                 account.getCurrencyType(),
                 account.getBalance()
             );
