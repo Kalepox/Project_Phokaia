@@ -1,6 +1,10 @@
 package com.phokaia.account.entities;
 
 import java.math.BigDecimal;
+
+import com.phokaia.account.exceptions.CurrencyMismatchException;
+import com.phokaia.account.exceptions.InsufficientFundsException;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -47,10 +51,19 @@ public class Account {
     }
 
     public void addMoney(BigDecimal input ){
+        if(input.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("Amount must be positive");
+        }
         balance = balance.add(input);
     }
 
     public void withdrawMoney(BigDecimal input){
+        if(input.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("Amount must be positive");
+        }
+        if(balance.compareTo(input) < 0){
+            throw new InsufficientFundsException(accountCode, balance, input);
+        }
         balance = balance.subtract(input);
     }
 
@@ -59,17 +72,13 @@ public class Account {
     }
 
     public void makeTransfer(Account recipient, BigDecimal amount){
-        if(currencyType.equals(recipient.currencyType)){
-            if(balance.compareTo(amount) < 0 || amount.compareTo(BigDecimal.ZERO)<= 0){
-                System.out.println("Balance not sufficient");
-            }
-            else{
-                recipient.addMoney(amount);
-                this.withdrawMoney(amount);
-            }
+        if (!recipient.currencyType.equals(currencyType)){
+            throw new CurrencyMismatchException(currencyType, recipient.currencyType);
         }
-        else{
-            System.out.println("Ïncorrect Currency type");
-        }
+
+        // Withdraw first: if it fails, the recipient hasn't received anything yet
+        this.withdrawMoney(amount);
+        recipient.addMoney(amount);
     }
 }
+    
