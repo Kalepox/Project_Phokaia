@@ -75,8 +75,6 @@ public class Account {
         if (!recipient.currencyType.equals(currencyType)){
             throw new CurrencyMismatchException(currencyType, recipient.currencyType);
         }
-
-        // Withdraw first: if it fails, the recipient hasn't received anything yet
         this.withdrawMoney(amount);
         recipient.addMoney(amount);
     }
