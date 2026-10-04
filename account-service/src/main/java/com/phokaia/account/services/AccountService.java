@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.phokaia.account.dtos.AccountDTO;
 import com.phokaia.account.entities.*;
 import com.phokaia.account.exceptions.*;
+import java.util.List;
 
 @Service
 public class AccountService {
@@ -33,12 +34,33 @@ public class AccountService {
         return AccountDTO.Response.from(saved);
     }
 
+    //Helper Function
+    private Account findAccount(String accountCode){
+        return accountRepository.findById(accountCode)
+            .orElseThrow(()-> new AccountNotFoundException(accountCode));
+    }
+
     @Transactional(readOnly = true)
     public AccountDTO.Response getAccount(String accountCode){
-        Account account = accountRepository.findById(accountCode)
-            .orElseThrow(()-> new AccountNotFoundException(accountCode));
-        
+        return AccountDTO.Response.from(findAccount(accountCode));
+    }
+
+    @Transactional 
+    public AccountDTO.Response deposit(String accountCode, AccountDTO.MoneyRequest request){
+        Account account = findAccount(accountCode);
+        account.addMoney(request.amount());
         return AccountDTO.Response.from(account);
     }
 
+     @Transactional(readOnly = true)
+    public List<AccountDTO.Response> getAccountsOfCustomer(String customerCode){
+
+        if(!customerRepository.existsById(customerCode)){
+            throw new CustomerNotFoundException(customerCode);
+        }
+        List<Account> accounts = accountRepository.findByHolderCustomerCode(customerCode);
+         return accounts.stream().map(AccountDTO.Response :: from).toList();
+    }
+
 }
+
