@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @RestController 
 @RequestMapping("/customers")
-public class CustomerControllers {
+public class CustomerController {
 
     private final CustomerService customerService;
 
@@ -26,10 +26,10 @@ public class CustomerControllers {
 
     //GET  /customers/CUS048219384593
     @GetMapping("/{customerCode}")
-    public CustomerDTO.Request get(@PathVariablen String customerCode){
+    public CustomerDTO.Response get(@PathVariable String customerCode){
         return customerService.getCustomer(customerCode);
     }
 
-    
+
 
 }
