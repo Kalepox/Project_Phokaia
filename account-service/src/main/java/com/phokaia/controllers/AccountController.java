@@ -16,10 +16,16 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    //Post
     @PostMapping 
     @ResponseStatus(HttpStatus.CREATED)
     public AccountDTO.Response create(@Valid @RequestBody AccountDTO.CreateRequest request){
         return accountService.createAccount(request);
+    }
+
+    @GetMapping 
+    public AccountDTO.Response get(@PathVariable String accountCode){
+        return accountService.getAccount(accountCode);
     }
 
 
