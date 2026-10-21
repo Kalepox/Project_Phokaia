@@ -1,4 +1,4 @@
-package com.phokaia.controllers;
+package com.phokaia.account.controllers;
 
 import org.springframework.web.bind.annotation.*;
 import com.phokaia.account.dtos.CustomerDTO;
@@ -29,6 +29,7 @@ public class CustomerController {
     public CustomerDTO.Response get(@PathVariable String customerCode){
         return customerService.getCustomer(customerCode);
     }
+    
 
 
 
