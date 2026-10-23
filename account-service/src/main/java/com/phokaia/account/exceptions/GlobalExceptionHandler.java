@@ -3,10 +3,12 @@ package com.phokaia.account.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import jakarta.persistence.Version;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({IllegalArgumentException.class})
     public ProblemDetail invalidHandle(RuntimeException ex){
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problem.setTitle("Invaild Request");
+        problem.setTitle("Invalid Request");
         return problem;
     }
 
@@ -48,6 +50,22 @@ public class GlobalExceptionHandler {
     public ProblemDetail invalidVersion(RuntimeException ex){
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Account was modified by another request");
         problem.setTitle("Concurrent Update");
+        return problem;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleValidation(MethodArgumentNotValidException ex){
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Request validation failed");
+        problem.setTitle("Invalid request");
+
+
+        // field name -> error message, e.g. "name" → "must not be blank"
+        Map<String, String> errors = new HashMap<>();
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+
+        problem.setProperty("errors", errors);
         return problem;
     }
 
