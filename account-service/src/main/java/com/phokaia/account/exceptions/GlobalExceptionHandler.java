@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
-
+        //Set property is for error field
         problem.setProperty("errors", errors);
         return problem;
     }
